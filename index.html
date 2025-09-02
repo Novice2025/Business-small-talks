@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluent Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #111827;
+            color: #E5E7EB;
+            overflow-x: hidden;
+        }
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(31, 41, 55, 0.9) 100%);
+            animation: gradient-shift 15s ease infinite;
+        }
+        @keyframes gradient-shift {
+            0% { background-size: 150% 150%; background-position: 0% 0%; }
+            50% { background-size: 150% 150%; background-position: 100% 100%; }
+            100% { background-size: 150% 150%; background-position: 0% 0%; }
+        }
+        .content-card {
+            background-color: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .content-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        .btn-nav {
+            background-color: #2563EB;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-nav:hover {
+            background-color: #3B82F6;
+            transform: translateY(-2px);
+        }
+        .section-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .section-content.active {
+            display: block;
+        }
+        .tab-button {
+            background-color: #4B5563;
+            color: #E5E7EB;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s;
+            cursor: pointer;
+        }
+        .tab-button.active {
+            background-color: #1F2937;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+        }
+        .tab-button:hover {
+            background-color: #6B7280;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+    <div class="animated-background"></div>
+
+    <main class="relative z-10 flex flex-col items-center p-8 min-h-screen">
+        <!-- Header Section -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl sm:text-5xl font-bold text-blue-400 mb-4">Business Small Talks</h1>
+            <p class="max-w-3xl text-lg sm:text-xl text-gray-300">
+                Improve your conversational skills for professional networking and social gatherings.
+            </p>
+        </header>
+
+        <!-- Main Content Area with two columns on medium screens and up -->
+        <div class="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Navigation Sidebar (left column) -->
+            <nav class="p-6 md:p-8 content-card rounded-2xl md:col-span-1 h-fit">
+                <h3 class="text-2xl font-semibold text-teal-400 mb-4">Mission List</h3>
+                <ul class="space-y-4">
+                    <li><button class="btn-nav w-full py-3 px-6 rounded-full text-lg font-semibold tracking-wide" data-section="mission-1">Mission 1: The Conference Mixer</button></li>
+                    <li><button class="btn-nav w-full py-3 px-6 rounded-full text-lg font-semibold tracking-wide" data-section="mission-2">Mission 2: The Elevator Pitch</button></li>
+                    <li><button class="btn-nav w-full py-3 px-6 rounded-full text-lg font-semibold tracking-wide" data-section="mission-3">Mission 3: Master Introductions</button></li>
+                    <li><button class="btn-nav w-full py-3 px-6 rounded-full text-lg font-semibold tracking-wide" data-section="mission-4">Mission 4: Getting Acquainted</button></li>
+                    <li><button class="btn-nav w-full py-3 px-6 rounded-full text-lg font-semibold tracking-wide" data-section="mission-5">Mission 5: Accepting & Refusing Invitations</button></li>
+                    <li><button class="btn-nav w-full py-3 px-6 rounded-full text-lg font-semibold tracking-wide" data-section="survival-phrases">Survival Phrases</button></li>
+                </ul>
+            </nav>
+
+            <!-- Dynamic Content Container (right column) -->
+            <section id="content-container" class="md:col-span-2 p-6 md:p-10 content-card rounded-2xl">
+                <h2 class="text-3xl sm:text-4xl font-semibold text-teal-400 text-center mb-8">
+                    <span id="section-title">Mission Dashboard</span>
+                </h2>
+                <p class="text-center text-gray-300">
+                    Choose a mission from the navigation bar on the left to load your briefing and objectives. Each mission is designed to challenge a different aspect of your professional communication skills. Good luck, agent.
+                </p>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const contentContainer = document.getElementById('content-container');
+            const sectionTitle = document.getElementById('section-title');
+            const navButtons = document.querySelectorAll('.btn-nav');
+
+            const sections = {
+                'mission-1': `
+                    <h3 class="text-2xl font-bold text-teal-300 mb-6">Mission 1: The Conference Mixer</h3>
+                    <p class="text-gray-400 mb-4">
+                        **Briefing:** You're at a crowded industry mixer. Your objective is to approach a senior executive from a target company, make a connection, and exit gracefully. This requires confidence and a clear purpose.
+                    </p>
+                    <div class="content-card p-8 rounded-lg">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">Conversation Flow:</h4>
+                        <div class="space-y-6 text-gray-300">
+                            <p><strong>You (Approaching):</strong> "Hi, my name is [Your Name], from [Your Company]. I've been really impressed by your presentation today."</p>
+                            <p><strong>Executive:</strong> "Oh, thank you! It's a pleasure to meet you. Thanks for coming by."</p>
+                            <p><strong>You:</strong> "I was particularly interested in your point about [specific topic from their talk]. We're exploring similar concepts, and I was wondering if you could share a bit more about your strategy on that."</p>
+                            <p><strong>Executive:</strong> "Certainly. It's a complex area, but we've found that..."</p>
+                            <p><strong>You (After a brief exchange):</strong> "That's incredibly insightful. I don't want to take up too much of your time, but **I'd love to continue this conversation at a later date (Eu adoraria continuar esta conversa em uma outra ocasião)**. Would you have a card so I could follow up?"</p>
+                        </div>
+                    </div>
+                `,
+                'mission-2': `
+                    <h3 class="text-2xl font-bold text-teal-300 mb-6">Mission 2: The Unexpected Elevator Pitch</h3>
+                    <p class="text-gray-400 mb-4">
+                        **Briefing:** You're in an elevator and find yourself alone with a key decision-maker. You have exactly 30 seconds to make a strong impression. This is a high-stakes, quick-hit mission.
+                    </p>
+                    <div class="content-card p-8 rounded-lg">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">The Pitch:</h4>
+                        <div class="space-y-6 text-gray-300">
+                            <p><strong>You:</strong> "Excuse me, I'm [Your Name] from [Your Company]. We help [Specific companies] **solve [their core problem] (resolver [o problema central deles])** by using our [Your unique solution]."</p>
+                            <p><strong>You:</strong> "For example, we recently helped [A company like theirs] **increase efficiency by 25% (aumentar a eficiência em 25%)** in just six months."</p>
+                            <p><strong>You:</strong> "I know your time is valuable. **Could I send you a brief email to tell you more about how we could do the same for you? (Eu poderia lhe enviar um breve e-mail para lhe dar mais detalhes sobre como podemos fazer o mesmo por você?)**"</p>
+                        </div>
+                    </div>
+                `,
+                'mission-3': `
+                    <h3 class="text-2xl font-bold text-teal-300 mb-6">Mission 3: Master Introductions</h3>
+                    <p class="text-gray-400 mb-4">
+                        **Briefing:** This mission focuses on the core principles of formal introductions. Your objective is to approach someone you don't know, find out about their work, and introduce them to a colleague with confidence and poise.
+                    </p>
+                    <div class="content-card p-8 rounded-lg">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">Conversation Flow: Making a New Contact</h4>
+                        <div class="space-y-6 text-gray-300">
+                            <p><strong>You (Approaching):</strong> "Hello, I don't think we've met. My name is [Your Name]."</p>
+                            <p><strong>New Contact:</strong> "Pleased to meet you. I'm [Their Name]."</p>
+                            <p><strong>You:</strong> "And what company are you from?" **(De qual empresa você é?)**</p>
+                            <p><strong>New Contact:</strong> "I'm with [Their Company]. I'm the [Their Title]."</p>
+                            <p><strong>You:</strong> "Ah yes. Your business is expanding very rapidly at the moment."</p>
+                            <p><strong>New Contact:</strong> "Yes, we're doing quite well. And yourself? Who do you work for?" **(E você? Para quem você trabalha?)**</p>
+                            <p><strong>You:</strong> "Actually, I work for myself. I'm the C.E.O. of a small [Your Industry] company."</p>
+                        </div>
+                    </div>
+                    <div class="content-card p-8 rounded-lg mt-6">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">Introducing a Colleague:</h4>
+                        <div class="space-y-6 text-gray-300">
+                            <p><strong>You:</strong> "[New Contact Name], let me introduce you to someone. This is [Colleague Name], my sales manager."</p>
+                            <p><strong>Colleague:</strong> "How do you do, [New Contact Name]?" **(Como vai?)**</p>
+                            <p><strong>New Contact:</strong> "I'm very well, thank you. It's nice to meet you, [Colleague Name]."</p>
+                            <p><strong>Colleague:</strong> "And you."</p>
+                            <p class="italic text-sm text-gray-400 mt-4">**Cultural Tip:** A firm handshake is a standard sign of respect. Avoid hugging or kissing when meeting for the first first time.</p>
+                        </div>
+                    </div>
+                `,
+                'mission-4': `
+                    <h3 class="text-2xl font-bold text-teal-300 mb-6">Mission 4: Getting Acquainted</h3>
+                    <p class="text-gray-400 mb-4">
+                        **Briefing:** This mission focuses on the core principles of small talk and polite conversation starters. Your objective is to break the ice and keep a conversation flowing naturally with someone new.
+                    </p>
+                    <div class="content-card p-8 rounded-lg">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">Conversation Flow: Breaking the Ice</h4>
+                        <div class="space-y-6 text-gray-300">
+                            <p><strong>New Contact:</strong> "Excuse me - is anyone sitting here?"</p>
+                            <p><strong>You:</strong> "No - please have a seat."</p>
+                            <p><strong>New Contact:</strong> "That's better - my feet are killing me!"</p>
+                            <p><strong>You:</strong> "Have you been here long?" **(Você está aqui há muito tempo?)**</p>
+                            <p><strong>New Contact:</strong> "No, but I just flew in this morning, and I haven't had a chance to sit down since then."</p>
+                            <p><strong>You:</strong> "Oh, where have you come from?" **(De onde você veio?)**</p>
+                        </div>
+                    </div>
+                    <div class="content-card p-8 rounded-lg mt-6">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">Key Phrases & Tips:</h4>
+                        <ul class="list-disc list-inside text-gray-300 space-y-4">
+                            <li>**Safe Topics:** Travel, accommodation, the city, weather.</li>
+                            <li>**Asking a question:** "Do you travel often?" asks about a regular action. "Are you from Manila?" asks for personal information.</li>
+                            <li>**Politely leaving:** "Excuse me, there's someone I must talk to. It's been very nice to meet you." **(Com licença, preciso falar com alguém. Foi muito bom conhecê-lo.)**</li>
+                        </ul>
+                    </div>
+                `,
+                'mission-5': `
+                    <h3 class="text-2xl font-bold text-teal-300 mb-6">Mission 5: Accepting & Refusing Invitations</h3>
+                    <p class="text-gray-400 mb-4">
+                        **Briefing:** This mission teaches you how to handle invitations with grace and professionalism, whether you're accepting or declining.
+                    </p>
+                    <div class="content-card p-8 rounded-lg">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">Making an Invitation:</h4>
+                        <ul class="list-disc list-inside text-gray-300 space-y-4">
+                            <li>"We're having a small dinner for some of our clients and friends after this. **Why don't you join us? (Por que você não se junta a nós?)**"</li>
+                            <li>"**Perhaps you could join us? (Talvez você pudesse se juntar a nós?)**"</li>
+                            <li>"**It would be great if you could join us. (Seria ótimo se você pudesse se juntar a nós.)**"</li>
+                        </ul>
+                    </div>
+                    <div class="content-card p-8 rounded-lg mt-6">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">Accepting an Invitation:</h4>
+                        <ul class="list-disc list-inside text-gray-300 space-y-4">
+                            <li>"That's very kind of you." **(É muita gentileza da sua parte.)**</li>
+                            <li>"That sounds great. **I'd be happy to. (Eu ficaria feliz em.)**"</li>
+                            <li>"**I'll see you then. (Eu te vejo então.)**"</li>
+                        </ul>
+                    </div>
+                    <div class="content-card p-8 rounded-lg mt-6">
+                        <h4 class="text-xl font-semibold text-cyan-300 mb-4">Refusing an Invitation:</h4>
+                        <ul class="list-disc list-inside text-gray-300 space-y-4">
+                            <li>"Unfortunately, **I have another engagement. (Eu tenho outro compromisso.)**"</li>
+                            <li>"I'm afraid **I have another commitment. (Eu tenho outro compromisso.)**"</li>
+                            <li>"I can't I'm sorry. **Perhaps another time? (Talvez outra hora?)**"</li>
+                        </ul>
+                    </div>
+                `,
+                'survival-phrases': `
+                    <h3 class="text-2xl font-bold text-teal-300 mb-6">Survival Phrases</h3>
+                    <p class="text-gray-400 mb-4">
+                        **Briefing:** These are your emergency escape phrases. Use them to navigate tricky social situations with politeness and professionalism.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="content-card p-8 rounded-lg">
+                            <h4 class="text-xl font-semibold text-cyan-300 mb-4">Politely Stepping Away:</h4>
+                            <p class="text-gray-400 mb-4">
+                                **Purpose:** These are your graceful exit strategies. They allow you to end a conversation respectfully while leaving a positive impression.
+                            </p>
+                            <ul class="list-disc list-inside text-gray-300 space-y-4">
+                                <li>"It was a pleasure speaking with you. **I'm going to grab a drink, but I hope to speak again soon (Vou pegar uma bebida, mas espero falar com você novamente em breve)**."</li>
+                                <li>"I see someone I was hoping to say hello to. **Please excuse me (Com licença)**, and have a great rest of the evening."</li>
+                                <li>"It was a pleasure meeting you, but **I have to circulate (Eu preciso circular)** and meet a few other people."</li>
+                            </ul>
+                        </div>
+                        <div class="content-card p-8 rounded-lg">
+                            <h4 class="text-xl font-semibold text-cyan-300 mb-4">Handling a Distraction:</h4>
+                            <p class="text-gray-400 mb-4">
+                                **Purpose:** These phrases are your professional pause buttons. They allow you to attend to an urgent matter without being rude or abrupt.
+                            </p>
+                            <ul class="list-disc list-inside text-gray-300 space-y-4">
+                                <li>"I apologize, my phone is ringing. I need to take this. **Would you mind if I stepped away for a moment? (Você se importaria se eu me afastasse por um momento?)**"</li>
+                                <li>"**Would you excuse me for a moment? (Você me daria licença por um momento?)**"</li>
+                                <li>"**Please excuse me (Com licença)**, I have a quick phone call to make. I'll be right back."</li>
+                                <li>"Just a moment, please, **I need to check my notes (Eu preciso verificar minhas anotações)**."</li>
+                            </ul>
+                        </div>
+                        <div class="content-card p-8 rounded-lg">
+                            <h4 class="text-xl font-semibold text-cyan-300 mb-4">Clarifying a Point:</h4>
+                            <p class="text-gray-400 mb-4">
+                                **Purpose:** These are your accuracy checks. They are crucial for avoiding miscommunication and showing that you're paying close attention.
+                            </p>
+                            <ul class="list-disc list-inside text-gray-300 space-y-4">
+                                <li>"I think I might have misunderstood. **Could you please clarify (Você poderia, por favor, esclarecer)?**"</li>
+                                <li>"I want to make sure I've got this right. Are you saying..."</li>
+                                <li>"Just to be clear, **are we on the same page regarding...? (estamos na mesma página sobre...?)**"</li>
+                            </ul>
+                        </div>
+                        <div class="content-card p-8 rounded-lg">
+                            <h4 class="text-xl font-semibold text-cyan-300 mb-4">Agreeing to a Follow-Up:</h4>
+                            <p class="text-gray-400 mb-4">
+                                **Purpose:** These phrases turn a good conversation into a concrete action plan. They show that you're serious and reliable.
+                            </p>
+                            <ul class="list-disc list-inside text-gray-300 space-y-4">
+                                <li>"**I'd be happy to set up a follow-up call (Ficaria feliz em agendar uma ligação de acompanhamento)** next week. I'll send you an invitation shortly."</li>
+                                <li>"**I'll follow up with you early next week (Entrarei em contato com você no início da próxima semana)** to get something on the calendar."</li>
+                            </ul>
+                        </div>
+                    </div>
+                `
+            };
+
+            const loadSection = (sectionName) => {
+                contentContainer.style.opacity = '0';
+                setTimeout(() => {
+                    contentContainer.innerHTML = sections[sectionName];
+                    const selectedButton = document.querySelector(`[data-section="${sectionName}"]`);
+                    if (selectedButton) {
+                        sectionTitle.textContent = selectedButton.textContent;
+                    }
+                    contentContainer.style.opacity = '1';
+                }, 300);
+            };
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const sectionName = event.target.getAttribute('data-section');
+                    loadSection(sectionName);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
